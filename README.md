@@ -1,0 +1,2 @@
+walkmod-license-applier-plugin
+==============================
