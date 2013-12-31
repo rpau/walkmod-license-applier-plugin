@@ -61,8 +61,8 @@
 	</profiles>
 	<name>walkmod-license-applier-plugin</name>
 	<scm>
-		<url>https://github.com/rpau/javalang</url>
-		<connection>https://github.com/rpau/javalang.git</connection>
+		<url>https://github.com/rpau/walkmod-license-applier-plugin</url>
+		<connection>https://github.com/rpau/walkmod-license-applier-plugin.git</connection>
 	</scm>
 	<developers>
 		<developer>
