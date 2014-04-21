@@ -3,6 +3,9 @@
    "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<bean id="org.walkmod:walkmod-license-applier-plugin:license-generator" 
-	class="org.walkmod.licenseapplier.visitors.LicenseApplier"></bean>
+	<bean id="org.walkmod:walkmod-license-applier-plugin:license-generator"
+		class="org.walkmod.licenseapplier.visitors.LicenseApplier"></bean>
+
+	<alias name="org.walkmod:walkmod-license-applier-plugin:license-generator"
+		alias="walkmod:commons:license-generator" />
 </beans>

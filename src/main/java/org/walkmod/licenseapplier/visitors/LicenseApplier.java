@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.walkmod.exceptions.WalkModException;
-import org.walkmod.javalang.ASTManager;
 import org.walkmod.javalang.ast.BlockComment;
 import org.walkmod.javalang.ast.Comment;
 import org.walkmod.javalang.ast.CompilationUnit;
@@ -144,7 +144,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 			while (it.hasNext() && !licenseFound) {
 				comment = it.next();
 				if (reference == null
-						|| ASTManager.isPrevious(reference, comment)) {
+						|| comment.isPreviousThan(reference)) {
 					licenseFound = matchesWithLicense(comment.getContent());
 				} else {
 					break;
@@ -171,7 +171,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 					comment = it.next();
 					if (referenceIsPackage || comment instanceof BlockComment) {
 						if (reference == null
-								|| ASTManager.isPrevious(reference, comment)) {
+								|| comment.isPreviousThan(reference)) {
 							it.remove();
 						} else {
 							break;
@@ -191,7 +191,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 					comment = it.next();
 					if (referenceIsPackage || comment instanceof BlockComment) {
 						if (reference == null
-								|| ASTManager.isPrevious(reference, comment)) {
+								|| comment.isPreviousThan(reference)) {
 							it.remove();
 						} else {
 							break;
