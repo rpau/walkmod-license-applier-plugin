@@ -1,0 +1,52 @@
+walkmod-license-applier-plugin
+==============================
+Raquel Pau <raquelpau@gmail.com>
+
+This is a walkmod plugin to add license headers in Java source files. By default, it add your license header if it is missing in your source files. 
+However, there are the following actions:
+
+* update: updates the existing header with a new one.
+* check: checks if the header is missing in some source file but it does not change any source file.
+* remove: removes the existing header.
+* reformat: add headers if they are missing (default option).
+
+== Usage
+
+You can apply walkmod-license-applier-plugin via  http://www.walkmod.com[walkmod] You just need to add the plugin and the transformation tag in 
+your `${PROJECT}/walkmod.xml` file. 
+
+----
+<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.0.dtd" >
+<walkmod>
+  <plugins>
+    <plugin groupId="org.walkmod" artifactId="walkmod-license-applier-plugin" version="1.0" />
+  </plugins>
+  <transformation type="walkmod:commons:license-generator">
+    <param name="licenseFile">src/main/license-header.txt</param>
+	<param name="action">reformat</param>
+  </transformation>
+</walkmod>
+----
+Customize the values of the licenseFile and action parameters.
+
+Remember, by default, walkmod takes your source files from your `src/main/java` directory. So, if you need to change it, specify a reader 
+before the transformation tag with your source directory.
+----
+<reader path="YOUR_SRC_DIR">
+----
+
+You can apply walkmod-license-applier-plugin via walkmod. 
+
+  $ walkmod apply
+
+Or, you can also check which would be the modified classes typing:
+
+  $ walkmod check
+
+== Contributing
+
+If you want to hack on this, fork it, improve it and send me a pull request.
+
+To get started using it, just clone it and call mvn install. 
+
+
