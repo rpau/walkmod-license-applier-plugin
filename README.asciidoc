@@ -8,7 +8,7 @@ However, there are the following actions:
 * update: updates the existing header with a new one.
 * check: checks if the header is missing in some source file but it does not change any source file.
 * remove: removes the existing header.
-* reformat: add headers if they are missing (default option).
+* reformat: adds headers if they are missing (default option).
 
 == Usage
 
