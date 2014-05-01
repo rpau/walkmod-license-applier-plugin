@@ -2,6 +2,8 @@ walkmod-license-applier-plugin
 ==============================
 Raquel Pau <raquelpau@gmail.com>
 
+image:https://travis-ci.org/rpau/walkmod-license-applier-plugin.svg?branch=master["Build Status", link="https://travis-ci.org/rpau/walkmod-license-applier-plugin"]
+
 This is a walkmod plugin to add license headers in Java source files. By default, it add your license header if it is missing in your source files. 
 However, there are the following actions:
 
