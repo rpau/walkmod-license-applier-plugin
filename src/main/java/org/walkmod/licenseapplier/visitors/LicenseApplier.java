@@ -79,6 +79,8 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 	 */
 	public static final String REFORMAT_ACTION = "reformat";
 
+	public boolean firstExecution = true;
+
 	public void setAction(String action) {
 		if (action != null) {
 			if (UPDATE_ACTION.equalsIgnoreCase(action)) {
@@ -100,14 +102,13 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 	private boolean matchesWithLicense(String content) {
 		int matchingIndex = 0;
 		boolean containsLicense = false;
-		if (content != null) {
+		if (content != null && licenseWords != null) {
 			String[] words = content.split("\\s");
 			if (words != null) {
 				for (int i = 0; i < words.length && !containsLicense; i++) {
 					String word = words[i].trim();
 					if (!"".equals(word)) {
-						if (isVariable(licenseWords[matchingIndex])
-								|| word.equals(licenseWords[matchingIndex])) {
+						if (isVariable(licenseWords[matchingIndex]) || word.equals(licenseWords[matchingIndex])) {
 							matchingIndex++;
 						} else {
 							matchingIndex = 0;
@@ -122,8 +123,14 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 
 	@Override
 	public void visit(CompilationUnit cu, VisitorContext ctx) {
-		if (licenseFile == null) {
+
+		if (licenseFile == null && !REMOVE_ACTION.equals(action)) {
 			throw new WalkModException("Missing license file");
+		}
+
+		if (firstExecution) {
+			updateLicenseContent();
+			firstExecution = false;
 		}
 		boolean licenseFound = false;
 		List<Comment> comments = cu.getComments();
@@ -143,8 +150,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 			Iterator<Comment> it = comments.iterator();
 			while (it.hasNext() && !licenseFound) {
 				comment = it.next();
-				if (reference == null
-						|| comment.isPreviousThan(reference)) {
+				if (reference == null || comment.isPreviousThan(reference)) {
 					licenseFound = matchesWithLicense(comment.getContent());
 				} else {
 					break;
@@ -153,13 +159,21 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 		}
 		if (!licenseFound) {
 			if (REFORMAT_ACTION.equals(action)) {
-				if (comments == null) {
+				boolean add = false;
+				if (comments == null || comments.isEmpty()) {
 					comments = new LinkedList<Comment>();
 					cu.setComments(comments);
+					add = true;
+				} else {
+					Comment firstComment = comments.get(0);
+					add = !(firstComment.getBeginLine() <= cu.getBeginLine());
 				}
-				BlockComment licenseComment = new BlockComment(licenseContent);
-				comments.add(0, licenseComment);
-				ctx.addTransformationMessage("Missing license as block comment. License file added");
+
+				if (add) {
+					BlockComment licenseComment = new BlockComment(licenseContent);
+					comments.add(0, licenseComment);
+					ctx.addTransformationMessage("Missing license as block comment. License file added");
+				}
 			} else if (CHECK_ACTION.equals(action)) {
 				ctx.addTransformationMessage("Missing license as block comment. License file added");
 			}
@@ -170,8 +184,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 				while (it.hasNext()) {
 					comment = it.next();
 					if (referenceIsPackage || comment instanceof BlockComment) {
-						if (reference == null
-								|| comment.isPreviousThan(reference)) {
+						if (reference == null || comment.isPreviousThan(reference)) {
 							it.remove();
 						} else {
 							break;
@@ -190,8 +203,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 				while (it.hasNext()) {
 					comment = it.next();
 					if (referenceIsPackage || comment instanceof BlockComment) {
-						if (reference == null
-								|| comment.isPreviousThan(reference)) {
+						if (reference == null || comment.isPreviousThan(reference)) {
 							it.remove();
 						} else {
 							break;
@@ -212,6 +224,78 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 		setLicense(new File(path));
 	}
 
+	private void updateLicenseContent() {
+		if (licenseFile != null) {
+			StringBuffer sb = new StringBuffer();
+			FileReader fr = null;
+			try {
+				fr = new FileReader(licenseFile);
+				BufferedReader reader = new BufferedReader(fr);
+				try {
+					String line = reader.readLine();
+					List<String[]> wordLines = new LinkedList<String[]>();
+					int wordsSize = 0;
+					while (line != null) {
+						sb.append(' ');
+						String[] words = line.split("\\s");
+						for (int i = 0; i < words.length; i++) {
+							String trimmed = words[i].trim();
+
+							if (isVariable(trimmed)) {
+								String variable = trimmed.substring(2, trimmed.length() - 1);
+								if (propertyValues.containsKey(variable)) {
+									sb.append(propertyValues.get(variable));
+								} else {
+									sb.append(words[i]);
+								}
+							} else {
+								sb.append(words[i]);
+							}
+							if (i + 1 < words.length) {
+								sb.append(' ');
+							}
+							words[i] = trimmed;
+							if (!"".equals(trimmed)) {
+								wordsSize += 1;
+							}
+						}
+
+						wordLines.add(words);
+						line = reader.readLine();
+						if (line != null) {
+							sb.append('\n');
+						}
+					}
+					licenseWords = new String[wordsSize];
+					int i = 0;
+					for (String[] words : wordLines) {
+						for (int j = 0; j < words.length; j++) {
+							if (!"".equals(words[j])) {
+								licenseWords[i] = words[j];
+								i++;
+							}
+						}
+					}
+				} finally {
+					if (reader != null) {
+						reader.close();
+					}
+				}
+			} catch (IOException e) {
+				throw new WalkModException("License file read", e);
+			} finally {
+				if (fr != null) {
+					try {
+						fr.close();
+					} catch (IOException e) {
+						throw new WalkModException("License file cannot be closed", e);
+					}
+				}
+			}
+			licenseContent = new String(sb);
+		}
+	}
+
 	public void setLicense(File licenseFile) throws FileNotFoundException {
 		this.licenseFile = licenseFile;
 		if (licenseFile == null) {
@@ -223,71 +307,7 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 		if (!licenseFile.canRead()) {
 			throw new WalkModException("License file cannot be read");
 		}
-		StringBuffer sb = new StringBuffer();
-		FileReader fr = new FileReader(licenseFile);
-		try {
-			BufferedReader reader = new BufferedReader(fr);
-			try {
-				String line = reader.readLine();
-				List<String[]> wordLines = new LinkedList<String[]>();
-				int wordsSize = 0;
-				while (line != null) {
-					sb.append(' ');
-					String[] words = line.split("\\s");
-					for (int i = 0; i < words.length; i++) {
-						String trimmed = words[i].trim();
 
-						if (isVariable(trimmed)) {
-							String variable = trimmed.substring(2,
-									trimmed.length() - 1);
-							if (propertyValues.containsKey(variable)) {
-								sb.append(propertyValues.get(variable));
-							} else {
-								sb.append(words[i]);
-							}
-						} else {
-							sb.append(words[i]);
-						}
-						if (i + 1 < words.length) {
-							sb.append(' ');
-						}
-						words[i] = trimmed;
-						if (!"".equals(trimmed)) {
-							wordsSize += 1;
-						}
-					}
-
-					wordLines.add(words);
-					line = reader.readLine();
-					if (line != null) {
-						sb.append('\n');
-					}
-				}
-				licenseWords = new String[wordsSize];
-				int i = 0;
-				for (String[] words : wordLines) {
-					for (int j = 0; j < words.length; j++) {
-						if (!"".equals(words[j])) {
-							licenseWords[i] = words[j];
-							i++;
-						}
-					}
-				}
-			} finally {
-				if (reader != null) {
-					reader.close();
-				}
-			}
-		} catch (IOException e) {
-			throw new WalkModException("License file read", e);
-		} finally {
-			try {
-				fr.close();
-			} catch (IOException e) {
-				throw new WalkModException("License file cannot be closed", e);
-			}
-		}
-		licenseContent = new String(sb);
 	}
 
 	public void setPropertyValues(Map<String, String> propertyValues) {
