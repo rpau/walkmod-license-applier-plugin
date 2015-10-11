@@ -24,11 +24,25 @@ your `${PROJECT}/walkmod.xml` file.
     <plugin groupId="org.walkmod" artifactId="walkmod-license-applier-plugin" version="[2.0, 3.0)" />
   </plugins>
   <transformation type="walkmod:commons:license-generator">
-    <param name="licenseFile">src/main/license-header.txt</param>
+    <param name="licenseFile">src/main/walkmod/license-applier/license.txt</param>
 	<param name="action">reformat</param>
   </transformation>
 </walkmod>
 ----
+
+However, if your values for your licenseFile and actions are the same than the previous configuration, you can simplify them by:
+
+----
+<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.0.dtd" >
+<walkmod>
+  <plugins>
+    <plugin groupId="org.walkmod" artifactId="walkmod-license-applier-plugin" version="[2.0, 3.0)" />
+  </plugins>
+  <transformation type="walkmod:commons:license-generator" />
+</walkmod>
+----
+
+
 Customize the values of the licenseFile and action parameters.
 
 Remember, by default, walkmod takes your source files from your `src/main/java` directory. So, if you need to change it, specify a reader 

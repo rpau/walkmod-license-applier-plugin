@@ -125,7 +125,11 @@ public class LicenseApplier extends VoidVisitorAdapter<VisitorContext> {
 	public void visit(CompilationUnit cu, VisitorContext ctx) {
 
 		if (licenseFile == null && !REMOVE_ACTION.equals(action)) {
-			throw new WalkModException("Missing license file");
+			String path = "src/main/walkmod/license-applier/license.txt";
+			licenseFile = new File(path);
+			if(!licenseFile.exists()){
+				throw new WalkModException("Missing license file at ["+path+"]");
+			}
 		}
 
 		if (firstExecution) {

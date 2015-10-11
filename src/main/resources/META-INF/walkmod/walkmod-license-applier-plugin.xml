@@ -8,4 +8,10 @@
 
 	<alias name="org.walkmod:walkmod-license-applier-plugin:license-generator"
 		alias="walkmod:commons:license-generator" />
+		
+	<alias name="org.walkmod:walkmod-license-applier-plugin:license-generator"
+		alias="walkmod:commons:license-applier" />
+	
+	<alias name="org.walkmod:walkmod-license-applier-plugin:license-generator"
+		alias="org.walkmod:walkmod-license-applier-plugin:license-applier" />
 </beans>
