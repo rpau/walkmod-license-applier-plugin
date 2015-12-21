@@ -13,17 +13,16 @@ However, there are the following actions:
 * reformat: adds headers if they are missing (default option).
 
 == Usage
+1) Check that your walkmod version is > = 2.0.
 
-You can apply walkmod-license-applier-plugin via  http://www.walkmod.com[walkmod] You just need to add the plugin and the transformation tag in 
+2) You can apply walkmod-license-applier-plugin via  http://www.walkmod.com[walkmod] You just need to add the transformation tag in 
 your `${PROJECT}/walkmod.xml` file. 
 
 ----
-<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.0.dtd" >
+<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.1.dtd" >
 <walkmod>
-  <plugins>
-    <plugin groupId="org.walkmod" artifactId="walkmod-license-applier-plugin" version="[2.0, 3.0)" />
-  </plugins>
-  <transformation type="walkmod:commons:license-generator">
+  
+  <transformation type="license-applier">
     <param name="licenseFile">src/main/walkmod/license-applier/license.txt</param>
 	<param name="action">reformat</param>
   </transformation>
@@ -33,12 +32,9 @@ your `${PROJECT}/walkmod.xml` file.
 However, if your values for your licenseFile and actions are the same than the previous configuration, you can simplify them by:
 
 ----
-<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.0.dtd" >
+<!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.1.dtd" >
 <walkmod>
-  <plugins>
-    <plugin groupId="org.walkmod" artifactId="walkmod-license-applier-plugin" version="[2.0, 3.0)" />
-  </plugins>
-  <transformation type="walkmod:commons:license-generator" />
+  <transformation type="license-applier" />
 </walkmod>
 ----
 
