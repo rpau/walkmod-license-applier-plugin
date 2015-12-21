@@ -18,7 +18,7 @@ However, there are the following actions:
 2) You can apply walkmod-license-applier-plugin via  http://www.walkmod.com[walkmod] You just need to add the transformation tag in 
 your `${PROJECT}/walkmod.xml` file. 
 
-----
+```XML
 <!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.1.dtd" >
 <walkmod>
   
@@ -27,25 +27,25 @@ your `${PROJECT}/walkmod.xml` file.
 	<param name="action">reformat</param>
   </transformation>
 </walkmod>
-----
+```
 
 However, if your values for your licenseFile and actions are the same than the previous configuration, you can simplify them by:
 
-----
+```XML
 <!DOCTYPE walkmod PUBLIC "-//WALKMOD//DTD"  "http://www.walkmod.com/dtd/walkmod-1.1.dtd" >
 <walkmod>
   <transformation type="license-applier" />
 </walkmod>
-----
+```
 
 
 Customize the values of the licenseFile and action parameters.
 
 Remember, by default, walkmod takes your source files from your `src/main/java` directory. So, if you need to change it, specify a reader 
 before the transformation tag with your source directory.
-----
+```XML
 <reader path="YOUR_SRC_DIR">
-----
+```
 
 You can apply walkmod-license-applier-plugin via walkmod. 
 
